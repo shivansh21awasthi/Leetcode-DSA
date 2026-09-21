@@ -1,15 +1,22 @@
-
 class Solution:
-    def nthUglyNumber(self, n: int) -> int:
-        heap = [1]
-        seen = {1}
+   def nthUglyNumber(self,n: int) -> int:
+    ugly = [0] * n
+    ugly[0] = 1
+    
+    i2 = i3 = i5 = 0
+    n2, n3, n5 = 2, 3, 5
+    
+    for i in range(1, n):
+        ugly[i] = min(n2, n3, n5)
         
-        for _ in range(n):
-            ugly = heapq.heappop(heap)
-            for f in (2, 3, 5):
-                nxt = ugly * f
-                if nxt not in seen:
-                    seen.add(nxt)
-                    heapq.heappush(heap, nxt)
-        
-        return ugly
+        if ugly[i] == n2:
+            i2 += 1
+            n2 = ugly[i2] * 2
+        if ugly[i] == n3:
+            i3 += 1
+            n3 = ugly[i3] * 3
+        if ugly[i] == n5:
+            i5 += 1
+            n5 = ugly[i5] * 5
+    
+    return ugly[-1]
