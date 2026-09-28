@@ -1,9 +1,10 @@
 class Solution:
-    def moveZeroes(self, nums):
-        last_non_zero = 0
-        for i in range(len(nums)):
-            if nums[i] != 0:
-                nums[last_non_zero] = nums[i]
-                last_non_zero += 1
-        for i in range(last_non_zero, len(nums)):
-            nums[i] = 0
+    def moveZeroes(self, nums: list[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        i = 0 
+        for j in range(len(nums)):
+            if nums[j] != 0:
+                nums[i], nums[j] = nums[j], nums[i]
+                i += 1
