@@ -1,0 +1,22 @@
+class Solution:
+    def maximumSumOfSquares(self, num: int, sum: int) -> str:
+        if sum > 9 * num:
+            return ""
+        
+        n_nines = sum // 9
+        rem = sum % 9
+        
+        if rem > 0:
+            zeros = num - n_nines - 1
+        else:
+            zeros = num - n_nines
+            
+        parts = []
+        parts.append("9" * n_nines)
+        
+        if rem > 0:
+            parts.append(str(rem))
+            
+        parts.append("0" * zeros)
+        
+        return "".join(parts)
