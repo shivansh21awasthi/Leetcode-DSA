@@ -1,0 +1,83 @@
+class Solution:
+    def palindromicPathQueries(self, n: int, edges: list[list[int]], s: str, queries: list[str]) -> list[bool]:
+        import sys
+        sys.setrecursionlimit(200000)
+        
+        adj = [[] for _ in range(n)]
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
+            
+        in_t = [0] * n
+        out_t = [0] * n
+        dep = [0] * n
+        timer = 0
+        up = [[-1] * 18 for _ in range(n)]
+        
+        def dfs(u, p, d):
+            nonlocal timer
+            in_t[u] = timer
+            timer += 1
+            up[u][0] = p
+            dep[u] = d
+            for v in adj[u]:
+                if v != p:
+                    dfs(v, u, d + 1)
+            out_t[u] = timer
+            
+        dfs(0, -1, 0)
+        
+        for j in range(1, 18):
+            for i in range(n):
+                if up[i][j-1] != -1:
+                    up[i][j] = up[up[i][j-1]][j-1]
+                    
+        def lca(u, v):
+            if dep[u] < dep[v]: 
+                u, v = v, u
+            for j in range(17, -1, -1):
+                if dep[u] - (1 << j) >= dep[v]: 
+                    u = up[u][j]
+            if u == v: 
+                return u
+            for j in range(17, -1, -1):
+                if up[u][j] != up[v][j]: 
+                    u, v = up[u][j], up[v][j]
+            return up[u][0]
+
+        bit = [0] * (timer + 1)
+        
+        def up_bit(i, v):
+            i += 1
+            while i <= timer: 
+                bit[i] ^= v
+                i += i & -i
+                
+        def q_bit(i):
+            r = 0
+            i += 1
+            while i > 0: 
+                r ^= bit[i]
+                i -= i & -i
+            return r
+            
+        msk = [1 << (ord(c) - 97) for c in s]
+        for i in range(n):
+            up_bit(in_t[i], msk[i])
+            up_bit(out_t[i], msk[i])
+            
+        ans = []
+        for q in queries:
+            parts = q.split()
+            if parts[0] == "update":
+                u, c = int(parts[1]), parts[2]
+                nm = 1 << (ord(c) - 97)
+                up_bit(in_t[u], msk[u] ^ nm)
+                up_bit(out_t[u], msk[u] ^ nm)
+                msk[u] = nm
+            else:
+                u, v = int(parts[1]), int(parts[2])
+                p = q_bit(in_t[u]) ^ q_bit(in_t[v]) ^ msk[lca(u, v)]
+                ans.append((p & (p - 1)) == 0)
+                
+        return ans
