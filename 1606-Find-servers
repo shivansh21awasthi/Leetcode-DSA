@@ -1,0 +1,29 @@
+from sortedcontainers import SortedList
+import heapq
+from typing import List
+
+class Solution:
+    def busiestServers(self, k: int, arrival: List[int], load: List[int]) -> List[int]:
+        busy = [] 
+        free = SortedList(range(k)) 
+        request_count = [0] * k 
+
+        for i, (start, duration) in enumerate(zip(arrival, load)):
+            while busy and busy[0][0] <= start:
+                end_time, server = heapq.heappop(busy)
+                free.add(server)
+
+            if not free:
+                continue 
+
+            idx = free.bisect_left(i % k)
+            if idx == len(free):
+                idx = 0 
+
+            server = free[idx]
+            free.remove(server)
+            heapq.heappush(busy, (start + duration, server))
+            request_count[server] += 1
+
+        max_request_count = max(request_count)
+        return [i for i, c in enumerate(request_count) if c == max_request_count] 
