@@ -1,19 +1,17 @@
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
-        if len(s)!=len(t):
-          return False
-        freq={}
-        for i in s:
-            if i not in freq:
-                freq[i]=1
+        s1=len(t)
+        s2=len(s)
+        hs=sorted(list(s))
+        hs1=sorted(list(t))
+
+        if s1!=s2:
+            return False
+        else:
+            if hs==hs1:
+                return True
             else:
-                freq[i]+=1         
-        for i in t:
-            if i not in freq:
-                return False
-            else:
-                freq[i]-=1                 
-        for i in freq.values():
-            if i!=0:
-             return False
-        return True          
+                return False    
+                
+
+        
